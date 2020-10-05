@@ -1,6 +1,5 @@
 import tensorflow as tf
-from tensorflow.keras.layers import Input, Conv2D, Activation, BatchNormalization, MaxPool2D, UpSampling2D, Add, Concatenate,
-    Conv2DTranspose, AveragePooling2D, Multiply, Dropout, GlobalAveragePooling2D, GlobalMaxPooling2D, Dense, Reshape, Lambda
+from tensorflow.keras.layers import Input, Conv2D, Activation, BatchNormalization, MaxPool2D, UpSampling2D, Add, Concatenate, Conv2DTranspose, AveragePooling2D, Multiply, Dropout, GlobalAveragePooling2D, GlobalMaxPooling2D, Dense, Reshape, Lambda
 from tensorflow.keras.models import Model
 from tensorflow.keras.applications import VGG16, VGG19, ResNet50, ResNet101, ResNet50V2, ResNet101V2, MobileNetV2, EfficientNetB6, EfficientNetB7
 from configs import *
@@ -374,6 +373,7 @@ def build_model(encoder='efficientnetb7', center='dac', full_skip=True, attentio
 
 ############# UNET #################
 def unet():
+	model_name = 'U-Net'
 	def conv_block(x, filters):
 		x = Conv2D(filters, 3, padding='same')(x)
 		x = BatchNormalization()(x)
@@ -413,6 +413,6 @@ def unet():
 	metrics = [dice_coef, Recall(), Precision(), AUC()]
 	opt = Nadam(LR)
 	model.compile(loss=bce_dice_loss, optimizer=opt, metrics=metrics)
-	return model
+	return model, model_name
 
 

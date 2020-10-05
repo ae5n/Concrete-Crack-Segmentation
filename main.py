@@ -13,11 +13,12 @@ print(f'Training Data: {len(train_images)}')
 print(f'Validation Data: {len(val_images)}')
 print(f'Testing Data: {len(test_images)}')
 
-train_dataset = tf_data(train_images, train_masks)
-val_dataset = tf_data(val_images, val_masks)
+train_data = data_loader(image_paths=train_images, mask_paths=train_masks, image_size=IMAGE_SIZE, augment=True).tf_data(batch_size=BATCH_SIZE)
+val_data = data_loader(image_paths=val_images, mask_paths=val_masks, image_size=IMAGE_SIZE, augment=False).tf_data(batch_size=BATCH_SIZE)
+test_data = data_loader(image_paths=test_images, mask_paths=test_masks, image_size=IMAGE_SIZE, augment=False).tf_data(batch_size=BATCH_SIZE)
 
 model, model_name = build_model(encoder='efficientnetb7', center='dac', full_skip=True, attention='sc', upscore='upall')
-#model = unet()
+#model, model_name = unet()
 
 model.summary()
 
@@ -50,15 +51,15 @@ if len(val_images) % BATCH_SIZE != 0:
 
 ## Training
 history = model.fit(
-    train_dataset,
-    validation_data=val_dataset,
+    train_data,
+    validation_data=val_data,
     epochs=NUM_EPOCHS,
     steps_per_epoch=train_steps,
     validation_steps=val_steps,
     callbacks=callbacks)
 
 plt.figure(figsize=(10, 8))
-plt.title(model_name, pad=.8)
+plt.title(model_name)
 plt.grid(b=True, which='major', linestyle='-', alpha=0.7)
 plt.grid(b=True, which='minor', linestyle=':', alpha=0.6)
 plt.minorticks_on()
@@ -69,11 +70,6 @@ plt.legend()
 plt.savefig(fname=model_name, dpi=300)
 
 ## Testing
-test_dataset = test_data(test_images, test_masks)
-
-#from tensorflow.keras.models import load_model
-#custom_objects={'dice_coef':dice_coef, 'bce_dice_loss':bce_dice_loss}
-#model = load_model(MODEL, custom_objects=custom_objects)
 
 test_steps = len(test_images) // BATCH_SIZE
 if len(train_images) % BATCH_SIZE != 0:
@@ -104,4 +100,4 @@ def show_predictions(dataset, num=1):
         display([image[0], mask[0], pred_mask[0]])
 
 
-show_predictions(test_dataset, 10)
+show_predictions(test_data, 10)

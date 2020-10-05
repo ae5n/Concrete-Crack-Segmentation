@@ -7,5 +7,3 @@ LR = 1e-4
 
 PATH = 'data/'
 
-#MODEL = 'model.h5'
-#MODEL = '/content/drive/Shared drives/CXRE01/Projects/Project Models/myatt_w_aspp.h5'
