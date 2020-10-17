@@ -187,7 +187,7 @@ def convtranspose_block(x, filters):
 	return x
 
 
-def upscore_block(x, filters, scale):
+def bilinear_upsample(x, filters, scale):
 	x = Conv2D(filters=filters, kernel_size=3, strides=1, padding='same')(x)
 	x = UpSampling2D(interpolation='bilinear', size=scale)(x)
 	return x
@@ -346,14 +346,14 @@ def build_model(encoder='efficientnetb7', center='dac', full_skip=True, attentio
 	if upscore is not None:
 		if upscore=='upall':
 			up_scales=[2 ** i for i in range(1, len(filters)+1)][::-1]
-			UP = [upscore_block(x, 32, up_scales[i]) for i, x in enumerate(X)]
+			UP = [bilinear_upsample(x, 32, up_scales[i]) for i, x in enumerate(X)]
 			if attention is not None:
 				UP = [attn_block(x) for x in UP]
 
 			up = Concatenate()(UP)
      
 		elif upscore=='upcenter':
-			up = upscore_block(X[0], 64, 2 ** len(filters))
+			up = bilinear_upsample(X[0], 64, 2 ** len(filters))
 			if attention is not None:
 				up = attn_block(up)
 
