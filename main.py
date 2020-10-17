@@ -77,7 +77,7 @@ if len(train_images) % BATCH_SIZE != 0:
 if len(val_images) % BATCH_SIZE != 0:
     val_steps += 1
 
-model.evaluate(test_dataset, steps=test_steps)
+model.evaluate(test_data, steps=test_steps)
 
 ## Show Predictions
 def display(display_list):
